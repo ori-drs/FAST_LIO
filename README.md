@@ -1,4 +1,4 @@
-# Installation in DRS
+# Installation for DRS
 ```
 # install
 cd ~/catkin_ws/src
@@ -8,7 +8,7 @@ cd FAST_LIO_FOR_HESAI
 git submodule update --init
 cd ..
 catkin build fast_lio
-source ~/ws_drs/devel/setup.bash
+source ~/catkin_ws/devel/setup.bash
 
 # run
 roslaunch fast_lio mapping_hesai.launch
