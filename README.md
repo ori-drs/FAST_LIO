@@ -1,3 +1,20 @@
+# Installation in DRS
+```
+# install
+cd ~/catkin_ws/src
+git clone https://github.com/Livox-SDK/livox_ros_driver.git
+git clone https://github.com/ori-drs/FAST_LIO_FOR_HESAI.git
+cd FAST_LIO_FOR_HESAI
+git submodule update --init
+cd ..
+catkin build fast_lio
+source ~/ws_drs/devel/setup.bash
+
+# run
+roslaunch fast_lio mapping_hesai.launch
+rosbag play xxx.bag
+```
+
 ## Related Works and Extended Application
 
 **SLAM:**
