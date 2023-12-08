@@ -1,7 +1,24 @@
-# Installation in DRS
+# Installation for DRS
 
 ### 1. install livox_ros_driver2
 follow the steps described in https://github.com/ori-drs/livox_ros_driver2
+
+### 2. install fast_lio
+```
+cd ~/catkin_ws/src
+git clone https://github.com/ori-drs/FAST_LIO_FOR_HESAI.git
+cd FAST_LIO_FOR_HESAI
+git submodule update --init
+cd ..
+catkin build fast_lio
+source ~/catkin_ws/devel/setup.bash
+```
+
+### 3. run
+```
+roslaunch fast_lio mapping_hesai.launch
+rosbag play xxx.bag
+```
 
 ## Related Works and Extended Application
 
