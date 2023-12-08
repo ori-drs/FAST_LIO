@@ -1,3 +1,8 @@
+# Installation in DRS
+
+### 1. install livox_ros_driver2
+follow the steps described in https://github.com/ori-drs/livox_ros_driver2
+
 ## Related Works and Extended Application
 
 **SLAM:**
