@@ -102,8 +102,8 @@ bool    is_first_lidar = true;
 vector<vector<int>>  pointSearchInd_surf; 
 vector<BoxPointType> cub_needrm;
 vector<PointVector>  Nearest_Points; 
-vector<double>       extrinT(3, 0.0);
-vector<double>       extrinR(9, 0.0);
+//vector<double>       extrinT(3, 0.0);
+//vector<double>       extrinR(9, 0.0);
 deque<double>                     time_buffer;
 deque<PointCloudXYZI::Ptr>        lidar_buffer;
 deque<sensor_msgs::msg::Imu::ConstSharedPtr> imu_buffer;
@@ -797,6 +797,9 @@ class LaserMappingNode : public rclcpp::Node
 public:
     LaserMappingNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions()) : Node("laser_mapping", options)
     {
+        vector<double>       extrinT(3, 0.0);
+        vector<double>       extrinR(9, 0.0);
+
         this->declare_parameter<bool>("publish.path_en", true);
         this->declare_parameter<bool>("publish.effect_map_en", false);
         this->declare_parameter<bool>("publish.map_en", false);
@@ -830,8 +833,8 @@ public:
         this->declare_parameter<bool>("mapping.extrinsic_est_en", true);
         this->declare_parameter<bool>("pcd_save.pcd_save_en", false);
         this->declare_parameter<int>("pcd_save.interval", -1);
-        this->declare_parameter<vector<double>>("mapping.extrinsic_T", vector<double>());
-        this->declare_parameter<vector<double>>("mapping.extrinsic_R", vector<double>());
+        this->declare_parameter<vector<double>>("mapping.extrinsic_T", vector<double>{0,1,2});
+        this->declare_parameter<vector<double>>("mapping.extrinsic_R", vector<double>{0,1,2,3,4,5,6,7,8});
 
         this->get_parameter_or<bool>("publish.path_en", path_en, true);
         this->get_parameter_or<bool>("publish.effect_map_en", effect_pub_en, false);
@@ -866,9 +869,12 @@ public:
         this->get_parameter_or<bool>("mapping.extrinsic_est_en", extrinsic_est_en, true);
         this->get_parameter_or<bool>("pcd_save.pcd_save_en", pcd_save_en, false);
         this->get_parameter_or<int>("pcd_save.interval", pcd_save_interval, -1);
-        this->get_parameter_or<vector<double>>("mapping.extrinsic_T", extrinT, vector<double>());
-        this->get_parameter_or<vector<double>>("mapping.extrinsic_R", extrinR, vector<double>());
+        this->get_parameter_or<vector<double>>("mapping.extrinsic_T", extrinT, vector<double>{0,1,2});
+        this->get_parameter_or<vector<double>>("mapping.extrinsic_R", extrinR, vector<double>{0,1,2,3,4,5,6,7,8});
+        //this->get_parameter_or<vector<double>>("mapping.extrinsic_T", extrinT, vector<double>());
+        //this->get_parameter_or<vector<double>>("mapping.extrinsic_R", extrinR, vector<double>());
 
+        RCLCPP_INFO(this->get_logger(), "p_pre->lid_topic %s", lid_topic.c_str());
         RCLCPP_INFO(this->get_logger(), "p_pre->lidar_type %d", p_pre->lidar_type);
 
         path.header.stamp = this->get_clock()->now();
@@ -890,6 +896,13 @@ public:
         downSizeFilterMap.setLeafSize(filter_size_map_min, filter_size_map_min, filter_size_map_min);
         memset(point_selected_surf, true, sizeof(point_selected_surf));
         memset(res_last, -1000.0f, sizeof(res_last));
+
+        RCLCPP_INFO(this->get_logger(), "extrinT[0] %f", extrinT[0]);
+        RCLCPP_INFO(this->get_logger(), "extrinT[1] %f", extrinT[1]);
+        RCLCPP_INFO(this->get_logger(), "extrinT[2] %f", extrinT[2]);
+        RCLCPP_INFO(this->get_logger(), "extrinR[0] %f", extrinR[0]);
+        RCLCPP_INFO(this->get_logger(), "extrinR[1] %f", extrinR[1]);
+        RCLCPP_INFO(this->get_logger(), "extrinR[2] %f", extrinR[2]);
 
         Lidar_T_wrt_IMU<<VEC_FROM_ARRAY(extrinT);
         Lidar_R_wrt_IMU<<MAT_FROM_ARRAY(extrinR);
