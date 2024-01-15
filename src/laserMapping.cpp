@@ -513,6 +513,7 @@ void publish_frame_world(rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::Share
     /**************** save map ****************/
     /* 1. make sure you have enough memories
     /* 2. noted that pcd save will influence the real-time performences **/
+    // Commented out in the ROS2 fork
     /*
     if (pcd_save_en)
     {
