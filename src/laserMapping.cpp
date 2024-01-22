@@ -143,6 +143,47 @@ geometry_msgs::msg::PoseStamped msg_body_pose;
 shared_ptr<Preprocess> p_pre(new Preprocess());
 shared_ptr<ImuProcess> p_imu(new ImuProcess());
 
+
+uint32_t sec_from_time(const builtin_interfaces::msg::Time &time){
+    uint64_t total_nsec = rclcpp::Time(time).nanoseconds();
+    uint64_t sec_only = floor(total_nsec/1000000000u);
+    uint32_t sec_only_32 = uint32_t(sec_only);
+    return sec_only_32;
+}
+
+uint32_t nsec_from_time(const builtin_interfaces::msg::Time &time){
+    uint64_t total_nsec = rclcpp::Time(time).nanoseconds();
+    //std::cout << std::flush;
+    uint64_t sec_only = floor(total_nsec/1000000000u);
+    uint64_t nsec_only = total_nsec - 1000000000u * sec_only;
+    //uint32_t sec_only_32 = uint32_t(sec_only);
+    uint32_t nsec_only_32 = uint32_t(nsec_only);
+
+    //std::cout << total_nsec << " total_nsec\n" << std::flush;
+    //std::cout << sec_only_x << " sec_only_x\n" << std::flush;
+    //std::cout << sec_only << " sec_only\n" << std::flush;
+    //std::cout << nsec_only << " nsec_only\n" << std::flush;
+    //std::cout << sec_only_32 << " sec_only_32\n" << std::flush;
+    //std::cout << nsec_only_32 << " nsec_only_32\n" << std::flush;
+    return nsec_only_32;
+}
+
+
+uint32_t sec_from_time(double time){
+    double sec_only_d = floor(time); // nsec part as floating
+    uint32_t sec_only_32 = uint32_t(sec_only_d);
+    return sec_only_32;
+}
+
+
+uint32_t nsec_from_time(double time){
+    //std::cout << std::flush;
+    double nsec_only_d = time - floor(time); // nsec part as floating
+    uint32_t nsec_only_32 = uint32_t(nsec_only_d*1e9);
+
+    return nsec_only_32;
+}
+
 void SigHandle(int sig)
 {
     flg_exit = true;
@@ -350,7 +391,7 @@ void livox_pcl_cbk(const livox_ros_driver2::msg::CustomMsg::UniquePtr msg)
 void imu_cbk(const sensor_msgs::msg::Imu::UniquePtr msg_in)
 {
     publish_count ++;
-    // cout<<"IMU got at: "<<msg_in->header.stamp.toSec()<<endl;
+    // cout<<"IMU got at: "<<get_time_sec(msg_in->header.stamp)<<endl << std::flush;
     sensor_msgs::msg::Imu::SharedPtr msg(new sensor_msgs::msg::Imu(*msg_in));
 
     msg->header.stamp = get_ros_time(get_time_sec(msg_in->header.stamp) - time_diff_lidar_to_imu);
@@ -876,6 +917,8 @@ public:
 
         RCLCPP_INFO(this->get_logger(), "p_pre->lid_topic %s", lid_topic.c_str());
         RCLCPP_INFO(this->get_logger(), "p_pre->lidar_type %d", p_pre->lidar_type);
+        RCLCPP_INFO(this->get_logger(), "p_pre->feature_enabled %d", p_pre->feature_enabled);
+        RCLCPP_INFO(this->get_logger(), "p_pre->time_unit %d", p_pre->time_unit);
 
         path.header.stamp = this->get_clock()->now();
         path.header.frame_id ="camera_init";

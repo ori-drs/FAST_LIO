@@ -914,7 +914,7 @@ void Preprocess::give_feature( pcl::PointCloud< PointType > &pl, vector< orgtype
     }
     uint head = 0;
 
-    while ( types[ head ].range < blind )
+    while ( types[ head ].range < blind_sqr )
     {
         head++;
     }
@@ -933,7 +933,7 @@ void Preprocess::give_feature( pcl::PointCloud< PointType > &pl, vector< orgtype
 
     for ( uint i = head; i < plsize2; i++ )
     {
-        if ( types[ i ].range < blind )
+        if ( types[ i ].range < blind_sqr )
         {
             continue;
         }
@@ -1033,7 +1033,7 @@ void Preprocess::give_feature( pcl::PointCloud< PointType > &pl, vector< orgtype
     plsize2 = plsize > 3 ? plsize - 3 : 0;
     for ( uint i = head + 3; i < plsize2; i++ )
     {
-        if ( types[ i ].range < blind || types[ i ].ftype >= Real_Plane )
+        if ( types[ i ].range < blind_sqr || types[ i ].ftype >= Real_Plane )
         {
             continue;
         }
@@ -1054,7 +1054,7 @@ void Preprocess::give_feature( pcl::PointCloud< PointType > &pl, vector< orgtype
                 m = 1;
             }
 
-            if ( types[ i + m ].range < blind )
+            if ( types[ i + m ].range < blind_sqr )
             {
                 if ( types[ i ].range > inf_bound )
                 {
@@ -1131,7 +1131,7 @@ void Preprocess::give_feature( pcl::PointCloud< PointType > &pl, vector< orgtype
     double ratio;
     for ( uint i = head + 1; i < plsize2; i++ )
     {
-        if ( types[ i ].range < blind || types[ i - 1 ].range < blind || types[ i + 1 ].range < blind )
+        if ( types[ i ].range < blind_sqr || types[ i - 1 ].range < blind_sqr || types[ i + 1 ].range < blind_sqr )
         {
             continue;
         }
